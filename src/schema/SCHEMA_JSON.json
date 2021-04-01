@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Annotation": {
+      "type": "object",
+      "discriminator": { "propertyName": "type" },
+      "required": ["type"],
+      "oneOf": [
+        {
+          "$ref": "#/definitions/AnnotationSlot"
+        },
+        {
+          "$ref": "#/definitions/AnnotationSlotChildren"
+        }
+      ]
+    },
+    "AnnotationSlot": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "slots": {
+          "items": {
+            "$ref": "#/definitions/Slot"
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "slot",
+          "type": "string"
+        }
+      },
+      "required": ["key", "label", "type", "slots"],
+      "type": "object"
+    },
+    "AnnotationSlotChildren": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "slotsChildren": {
+          "items": {
+            "$ref": "#/definitions/SlotChildren"
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "slotChildren",
+          "type": "string"
+        }
+      },
+      "required": ["key", "label", "type", "slotsChildren"],
+      "type": "object"
+    },
+    "Email": {
+      "type": "string"
+    },
+    "LineSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "type": {
+          "const": "line",
+          "type": "string"
+        },
+        "vertices": {
+          "items": {
+            "$ref": "#/definitions/Point"
+          },
+          "type": "array"
+        }
+      },
+      "required": ["id", "label", "type", "vertices"]
+    },
+    "OperatorType": {
+      "enum": ["anchor", "input", "slot", "slotChildren", "childrenOnly"],
+      "type": "string"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": ["x", "y"],
+      "type": "object"
+    },
+    "Slot": {
+      "if": { "properties": { "type": { "const": "text" } }, "type": "object" },
+      "then": {
+        "$ref": "#/definitions/TextSlot"
+      },
+      "else": {
+        "if": {
+          "properties": { "type": { "const": "line" } },
+          "type": "object"
+        },
+        "then": {
+          "$ref": "#/definitions/LineSlot"
+        },
+        "else": {}
+      }
+    },
+    "SlotChildren": {
+      "additionalProperties": false,
+      "properties": {
+        "children": {
+          "items": {
+            "$ref": "#/definitions/Annotation"
+          },
+          "type": "array"
+        },
+        "slot": {
+          "$ref": "#/definitions/Slot"
+        }
+      },
+      "required": ["slot", "children"],
+      "type": "object"
+    },
+    "TextSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "length": {
+          "type": "number"
+        },
+        "source": {
+          "type": "string"
+        },
+        "start": {
+          "type": "number"
+        },
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "const": "text",
+          "type": "string"
+        }
+      },
+      "required": ["id", "label", "length", "start", "text", "type"]
+    }
+  }
+}
